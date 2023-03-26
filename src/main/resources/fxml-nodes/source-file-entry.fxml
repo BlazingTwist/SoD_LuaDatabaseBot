@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import blazingtwist.sod_luadatabasebot.ui.LedButton?>
+<VBox
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="blazingtwist.sod_luadatabasebot.ui.SourceFileEntry"
+fx:id="container">
+
+    <Label text="Fireball Source" styleClass="mapper-name" onDragOver="#onFileDragOver" onDragDropped="#onFileDropped" fx:id="fileName"/>
+    <HBox style="-fx-padding: 0 0 12 24" onDragOver="#onFileDragOver" onDragDropped="#onFileDropped" fx:id="detailsHBox">
+        <LedButton fx:factory="load" fx:id="selectButton"/>
+        <Label text="(or drag a file here)" styleClass="mapper-wiki-path" fx:id="selectedFileLabel">
+            <tooltip>
+                <Tooltip text="select a file by using drag/drop or clicking the button" fx:id="selectedFileTooltip"/>
+            </tooltip>
+        </Label>
+    </HBox>
+
+    <Rectangle styleClass="small-divider" width="250" height="2" fx:id="dividerLine" opacity="0"/>
+
+</VBox>

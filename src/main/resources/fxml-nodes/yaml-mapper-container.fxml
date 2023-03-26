@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.shape.Rectangle?>
+<GridPane
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="blazingtwist.sod_luadatabasebot.ui.YamlMapperContainer"
+        prefWidth="300" minWidth="300" maxWidth="300" styleClass="mapper-grid" hgap="10" fx:id="mapperPane">
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS"/>
+        <ColumnConstraints hgrow="NEVER"/>
+        <ColumnConstraints hgrow="NEVER"/>
+    </columnConstraints>
+
+    <Label text="Battle Stats" GridPane.rowIndex="0" GridPane.columnSpan="3" styleClass="mapper-header" fx:id="mapperHeader"/>
+
+    <Rectangle GridPane.rowIndex="1" GridPane.columnSpan="3" styleClass="big-divider" width="300" height="3"/>
+</GridPane>

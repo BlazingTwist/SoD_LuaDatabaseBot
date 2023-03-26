@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<StackPane xmlns:fx="http://javafx.com/fxml" fx:controller="blazingtwist.sod_luadatabasebot.MainController" fx:id="rootNode">
+    <VBox alignment="CENTER" spacing="20.0" fillWidth="false" style="-fx-background-color: #282828">
+        <padding>
+            <Insets top="10" bottom="10" left="12" right="12"/>
+        </padding>
+
+        <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
+            <GridPane alignment="CENTER">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="NEVER"/>
+                    <ColumnConstraints hgrow="ALWAYS" prefWidth="75" minWidth="12"/>
+                    <ColumnConstraints hgrow="NEVER"/>
+                    <ColumnConstraints hgrow="ALWAYS" prefWidth="75" minWidth="12"/>
+                    <ColumnConstraints hgrow="NEVER"/>
+                </columnConstraints>
+
+                <ScrollPane prefWidth="318" GridPane.columnIndex="0" fitToHeight="true">
+                    <GridPane fx:id="yamlMapperGrid">
+                        <rowConstraints>
+                            <RowConstraints vgrow="NEVER"/>
+                            <RowConstraints vgrow="ALWAYS" prefHeight="40" minHeight="18"/>
+                            <RowConstraints vgrow="NEVER"/>
+                        </rowConstraints>
+                    </GridPane>
+                </ScrollPane>
+
+                <ScrollPane prefWidth="268" GridPane.columnIndex="2" fitToHeight="true" fx:id="sourceFileListContainer"
+                            translateX="-150" opacity="0" disable="true">
+                    <VBox>
+                        <AnchorPane>
+                            <AnchorPane prefWidth="250" minWidth="250" maxWidth="250" fx:id="sourceFileAnimPane"/>
+                            <VBox prefWidth="250" minWidth="250" maxWidth="250" styleClass="mapper-grid" fx:id="sourceFileVBox">
+                                <VBox fx:id="sourceFileHeaderVBox">
+                                    <Label text="Files" styleClass="mapper-header"/>
+                                    <Rectangle styleClass="big-divider" width="250" height="3"/>
+                                </VBox>
+                            </VBox>
+                        </AnchorPane>
+                    </VBox>
+                </ScrollPane>
+
+                <ScrollPane prefWidth="368" GridPane.columnIndex="4" fitToHeight="true" fx:id="uploadSettingsContainer"
+                            translateX="-150" opacity="0" disable="true">
+                    <VBox>
+                        <VBox prefWidth="350" minWidth="350" maxWidth="350" styleClass="mapper-grid">
+                            <Label text="Upload Settings" styleClass="mapper-header"/>
+                            <Rectangle styleClass="big-divider" width="350" height="3"/>
+
+                            <GridPane hgap="8">
+                                <padding>
+                                    <Insets bottom="12"/>
+                                </padding>
+                                <columnConstraints>
+                                    <ColumnConstraints hgrow="ALWAYS"/>
+                                    <ColumnConstraints hgrow="NEVER" minWidth="43"/>
+                                    <ColumnConstraints prefWidth="8" minWidth="8"/>
+                                </columnConstraints>
+
+                                <Label text="Wiki URL" styleClass="setting-label" GridPane.columnSpan="3" GridPane.rowIndex="0"/>
+                                <Label styleClass="mapper-wiki-path" GridPane.rowIndex="1" fx:id="wikiUrlLabel">
+                                    <tooltip>
+                                        <Tooltip fx:id="wikiUrlTooltip"/>
+                                    </tooltip>
+                                </Label>
+                                <Button text="Edit" styleClass="flat-button, button-small" focusTraversable="false" GridPane.columnIndex="1"
+                                        GridPane.rowIndex="1" onAction="#onEditWikiUrl"/>
+
+                                <Pane GridPane.rowIndex="2" minHeight="8"/>
+                                <Rectangle styleClass="small-divider" width="350" height="2" GridPane.columnSpan="3" GridPane.rowIndex="3"/>
+
+                                <Label text="Bot Name" styleClass="setting-label" GridPane.columnSpan="3" GridPane.rowIndex="4"/>
+                                <Label styleClass="mapper-wiki-path" GridPane.rowIndex="5" fx:id="botNameLabel">
+                                    <tooltip>
+                                        <Tooltip fx:id="botNameTooltip"/>
+                                    </tooltip>
+                                </Label>
+                                <Button text="Edit" styleClass="flat-button, button-small" focusTraversable="false" GridPane.columnIndex="1"
+                                        GridPane.rowIndex="5" onAction="#onEditBotName"/>
+
+                                <Pane GridPane.rowIndex="6" minHeight="8"/>
+                                <Rectangle styleClass="small-divider" width="350" height="2" GridPane.columnSpan="3" GridPane.rowIndex="7"/>
+
+                                <Label text="Bot Password" styleClass="setting-label" GridPane.columnSpan="3" GridPane.rowIndex="8"/>
+                                <Label styleClass="mapper-wiki-path" GridPane.rowIndex="9" fx:id="botPasswordLabel">
+                                    <tooltip>
+                                        <Tooltip fx:id="botPasswordTooltip"/>
+                                    </tooltip>
+                                </Label>
+                                <Button text="Edit" styleClass="flat-button, button-small" focusTraversable="false" GridPane.columnIndex="1"
+                                        GridPane.rowIndex="9" onAction="#onEditBotPassword"/>
+                            </GridPane>
+                        </VBox>
+                        <VBox VBox.vgrow="ALWAYS"/>
+                        <VBox>
+                            <GridPane>
+                                <columnConstraints>
+                                    <ColumnConstraints hgrow="ALWAYS"/>
+                                    <ColumnConstraints hgrow="NEVER"/>
+                                    <ColumnConstraints prefWidth="8"/>
+                                </columnConstraints>
+                                <StackPane GridPane.columnIndex="1" fx:id="uploadButtonContainer">
+                                    <Button text="Upload" styleClass="flat-button, button-large" focusTraversable="false" disable="true"/>
+                                    <Button text="Upload" styleClass="flat-button-positive, button-large" focusTraversable="false"
+                                            fx:id="uploadButton" opacity="0" disable="true" onAction="#onUploadPressed"/>
+                                </StackPane>
+                            </GridPane>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </GridPane>
+        </VBox>
+    </VBox>
+    <!--<VBox alignment="CENTER" spacing="20.0" fillWidth="false" pickOnBounds="false">
+        <padding>
+            <Insets top="10" bottom="10" left="12" right="12"/>
+        </padding>
+
+        <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
+            <GridPane alignment="CENTER">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="NEVER"/>
+                    <ColumnConstraints hgrow="ALWAYS" prefWidth="75" minWidth="12"/>
+                    <ColumnConstraints hgrow="NEVER"/>
+                    <ColumnConstraints hgrow="ALWAYS" prefWidth="75" minWidth="12"/>
+                    <ColumnConstraints hgrow="NEVER"/>
+                </columnConstraints>
+
+                <ScrollPane prefWidth="318" minHeight="500" GridPane.columnIndex="2" fitToHeight="true">
+                    <VBox spacing="10" alignment="TOP_CENTER">
+                        <Button text="Toggle" styleClass="flat-button, button-large" focusTraversable="false" onAction="#onAnimateSpinner"/>
+                        <LoadingSpinner indeterminate="true" startAngle="0" thickness="3" fx:id="testLoadingSpinner" progressText="false"
+                                        radius="10" progress="0.75">
+                            <paintAnimationSequence>
+                                <LoadingSpinnerPaintAnimationInfo paint="#4285f4"/>
+                                <LoadingSpinnerPaintAnimationInfo paint="#47da37"/>
+                                <LoadingSpinnerPaintAnimationInfo paint="#f3d513"/>
+                                <LoadingSpinnerPaintAnimationInfo paint="#da3737"/>
+                            </paintAnimationSequence>
+                            <iconSequence>
+                                <LoadingSpinnerAnimatedIcon fx:constant="greenCheckMark"/>
+                                <LoadingSpinnerAnimatedIcon fx:constant="yellowExclamationMark"/>
+                                <LoadingSpinnerAnimatedIcon fx:constant="redCross"/>
+                            </iconSequence>
+                        </LoadingSpinner>
+                        <LoadingSpinner indeterminate="true" startAngle="0" thickness="3" fx:id="testLoadingSpinner2" progressText="false"
+                                        radius="10" progress="-0.75">
+                            <paintAnimationSequence>
+                                <LoadingSpinnerPaintAnimationInfo paint="#4285f4"/>
+                                <LoadingSpinnerPaintAnimationInfo paint="#47da37"/>
+                                <LoadingSpinnerPaintAnimationInfo paint="#f3d513"/>
+                                <LoadingSpinnerPaintAnimationInfo paint="#da3737"/>
+                            </paintAnimationSequence>
+                            <iconSequence>
+                                <LoadingSpinnerAnimatedIcon fx:constant="greenCheckMark"/>
+                                <LoadingSpinnerAnimatedIcon fx:constant="yellowExclamationMark"/>
+                                <LoadingSpinnerAnimatedIcon fx:constant="redCross"/>
+                            </iconSequence>
+                        </LoadingSpinner>
+                    </VBox>
+                </ScrollPane>
+            </GridPane>
+        </VBox>
+    </VBox>-->
+    <Rectangle width="4000" height="4000" fill="black" opacity="0" fx:id="darkenOverlay" disable="true"
+               onMouseClicked="#onclick_panelBackground"/>
+    <VBox fx:id="singleStringEditPanel" alignment="CENTER" opacity="0" disable="true" pickOnBounds="false">
+        <VBox prefWidth="500" minWidth="500" maxWidth="500" styleClass="edit-panel">
+            <Label text="Edit Fireball Stats Wiki-Path" styleClass="edit-panel-header" fx:id="singleStringEditHeader"/>
+
+            <Rectangle styleClass="big-divider" width="495" height="3"/>
+
+            <GridPane vgap="8" hgap="8">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="8" hgrow="NEVER"/>
+                    <ColumnConstraints hgrow="NEVER"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                    <ColumnConstraints prefWidth="8" hgrow="NEVER"/>
+                </columnConstraints>
+                <padding>
+                    <Insets top="8" bottom="8"/>
+                </padding>
+                <Label text="Current Path" styleClass="edit-panel-text" GridPane.columnIndex="1" fx:id="singleStringEditCurrentLabel"/>
+                <TextField prefColumnCount="1" text="Module:BlazingTwist/DragonStats/Database/BattleFireballDB"
+                           styleClass="edit-panel-input"
+                           GridPane.columnIndex="2" editable="false" fx:id="singleStringEditCurrentTextField"/>
+                <Label text="New Path" styleClass="edit-panel-text" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                       fx:id="singleStringEditNewLabel"/>
+                <TextField prefColumnCount="1" text="Module:BlazingTwist/DragonStats/Database/BattleFireballDB"
+                           styleClass="edit-panel-input"
+                           GridPane.columnIndex="2" GridPane.rowIndex="1" fx:id="singleStringEditNewTextField"/>
+            </GridPane>
+
+            <Rectangle styleClass="small-divider" width="495" height="2"/>
+
+            <HBox spacing="8" alignment="BOTTOM_RIGHT">
+                <padding>
+                    <Insets top="8" bottom="8" right="16"/>
+                </padding>
+                <Button text="Save" styleClass="flat-button-positive, button-small" focusTraversable="false"
+                        onAction="#onclick_SingleStringEditSave"/>
+                <Button text="Reset to Defaults" styleClass="flat-button, button-small" focusTraversable="false"
+                        onAction="#onclick_SingleStringEditReset"/>
+                <Button text="Cancel" styleClass="flat-button, button-small" focusTraversable="false"
+                        onAction="#onclick_SingleStringEditCancel"/>
+            </HBox>
+        </VBox>
+    </VBox>
+</StackPane>
