@@ -45,13 +45,13 @@ public class BattleFireballNameMapper extends YamlMapper {
 
 		@Setting("mainWeapon")
 		@Required
-		public String mainWeapon;
+		public List<String> mainWeapon;
 
 		private WeaponNameEntry() {
 		}
 
 		public String buildLuaDataTableEntry() {
-			return "\"" + LuaDatabaseCompressor.sanitizeString(mainWeapon) + "\",";
+			return "\"" + LuaDatabaseCompressor.sanitizeString(mainWeapon.get(0)) + "\",";
 		}
 	}
 
