@@ -31,4 +31,5 @@
 *.iws
 
 passwords.txt
-out/
+out/*
+!out/ReleaseBuilder.bat
