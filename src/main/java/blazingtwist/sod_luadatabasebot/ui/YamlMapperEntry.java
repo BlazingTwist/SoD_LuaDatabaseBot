@@ -170,7 +170,7 @@ public class YamlMapperEntry {
 		selectButton.setLed(!ledIsOn);
 		mapper.setEnabled(!ledIsOn);
 
-		MainApplication.getMainController().updateDisplayedSourceFiles();
+		MainApplication.getMainController().onStatUploadSelectionChanged();
 
 		if (ledIsOn) {
 			// animate: hide wikiPath and edit button

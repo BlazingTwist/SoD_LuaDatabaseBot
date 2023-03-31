@@ -16,7 +16,29 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 <StackPane xmlns:fx="http://javafx.com/fxml" fx:controller="blazingtwist.sod_luadatabasebot.MainController" fx:id="rootNode">
-    <VBox alignment="CENTER" spacing="20.0" fillWidth="false" style="-fx-background-color: #282828">
+
+    <!-- upload window -->
+    <VBox fx:id="uploadStatusRootPanel" alignment="CENTER" spacing="20.0" style="-fx-background-color: #282828" visible="false"
+          disable="true">
+        <VBox VBox.vgrow="ALWAYS" alignment="CENTER">
+            <ScrollPane fitToWidth="true">
+                <GridPane fx:id="uploadStatusContainer" alignment="CENTER" vgap="20" hgap="8">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER"/>
+                        <ColumnConstraints hgrow="NEVER"/>
+                        <ColumnConstraints hgrow="NEVER"/>
+                    </columnConstraints>
+                </GridPane>
+            </ScrollPane>
+        </VBox>
+        <AnchorPane>
+            <Button styleClass="flat-button, button-large" AnchorPane.rightAnchor="8" AnchorPane.bottomAnchor="8"
+                    fx:id="uploadResultButton" text="In Progress" disable="true"/>
+        </AnchorPane>
+    </VBox>
+
+    <!-- file selection and configuration gui -->
+    <VBox fx:id="fileSelectionRootPanel" alignment="CENTER" spacing="20.0" fillWidth="false" style="-fx-background-color: #282828">
         <padding>
             <Insets top="10" bottom="10" left="12" right="12"/>
         </padding>
@@ -178,8 +200,10 @@
             </GridPane>
         </VBox>
     </VBox>-->
+
     <Rectangle width="4000" height="4000" fill="black" opacity="0" fx:id="darkenOverlay" disable="true"
                onMouseClicked="#onclick_panelBackground"/>
+
     <VBox fx:id="singleStringEditPanel" alignment="CENTER" opacity="0" disable="true" pickOnBounds="false">
         <VBox prefWidth="500" minWidth="500" maxWidth="500" styleClass="edit-panel">
             <Label text="Edit Fireball Stats Wiki-Path" styleClass="edit-panel-header" fx:id="singleStringEditHeader"/>
@@ -222,4 +246,32 @@
             </HBox>
         </VBox>
     </VBox>
+
+    <VBox fx:id="uploadResponsePanel" alignment="CENTER" opacity="0" disable="true" pickOnBounds="false">
+        <GridPane alignment="CENTER" hgap="20" vgap="20" pickOnBounds="false">
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints vgrow="NEVER"/>
+                <RowConstraints vgrow="NEVER"/>
+            </rowConstraints>
+
+            <HBox fx:id="uploadWarningErrorContainer" alignment="CENTER" spacing="40" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                  pickOnBounds="false"/>
+
+            <GridPane vgap="8" GridPane.rowIndex="1" GridPane.columnIndex="0" pickOnBounds="false">
+                <rowConstraints>
+                    <RowConstraints vgrow="NEVER"/>
+                    <RowConstraints vgrow="ALWAYS"/>
+                </rowConstraints>
+                <Label text="Body" styleClass="upload-response-header" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                       GridPane.fillWidth="true"/>
+                <ScrollPane GridPane.rowIndex="1" GridPane.columnIndex="0" pickOnBounds="false">
+                    <Label styleClass="upload-response-text" fx:id="uploadResponseBodyLabel"/>
+                </ScrollPane>
+            </GridPane>
+        </GridPane>
+    </VBox>
+
 </StackPane>

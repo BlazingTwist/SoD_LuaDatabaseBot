@@ -7,9 +7,11 @@ module blazingtwist.sod_luadatabasebot {
 	requires org.spongepowered.configurate.yaml;
 	requires org.spongepowered.configurate.hocon;
 	requires org.spongepowered.configurate.jackson;
+	requires com.google.gson;
 	requires reflections;
 	requires org.jetbrains.annotations;
 	requires fx.loading.spinner;
+	requires java.net.http;
 
 	opens blazingtwist.sod_luadatabasebot
 			to javafx.fxml,

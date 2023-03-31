@@ -43,8 +43,22 @@
     -fx-background-radius: 0px;
 }
 
+.flat-button-negative {
+    -fx-background-color: linear-gradient(#a05050 47%, #8b4646 95%, #704b4b 100%);
+    -fx-text-fill: white;
+    -fx-label-padding: 0 2px 1px 0;
+    -fx-border-radius: 0px;
+    -fx-border-width: 0px;
+    -fx-background-radius: 0px;
+}
+
 .flat-button-positive:pressed {
     -fx-background-color: linear-gradient(#4b7052 5%, #43864f 5%, #468c55 100%);
+    -fx-label-padding: 1px 2px 0 0;
+}
+
+.flat-button-negative:pressed {
+    -fx-background-color: linear-gradient(#704b4b 5%, #8b4646 5%, #a05050 100%);
     -fx-label-padding: 1px 2px 0 0;
 }
 
@@ -123,6 +137,62 @@
     -fx-text-fill: white;
     -fx-font-size: 12;
     -fx-background-color: linear-gradient(#717171 5%, #767676 5%, #868686 100%);;
+}
+
+.upload-step-label {
+    -fx-text-fill: white;
+    -fx-font-size: 15;
+}
+
+.upload-warnings-header {
+    -fx-max-width: Infinity;
+    -fx-text-fill: black;
+    -fx-font-size: 15;
+    -fx-padding: 0 4 0 4;
+    -fx-background-color: linear-gradient(#FFF2CC 5%, #ffedb6 5%, #FFD966 100%);
+}
+
+.upload-warnings-module {
+    -fx-text-fill: white;
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+}
+
+.upload-warnings-text {
+    -fx-text-fill: white;
+    -fx-font-size: 12;
+}
+
+.upload-errors-header {
+    -fx-max-width: Infinity;
+    -fx-text-fill: black;
+    -fx-font-size: 15;
+    -fx-padding: 0 4 0 4;
+    -fx-background-color: linear-gradient(#ffcccc 5%, #ffb6b6 5%, #ff6666 100%);
+}
+
+.upload-errors-title {
+    -fx-text-fill: white;
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+}
+
+.upload-errors-text {
+    -fx-text-fill: white;
+    -fx-font-size: 12;
+}
+
+.upload-response-header {
+    -fx-max-width: Infinity;
+    -fx-text-fill: black;
+    -fx-font-size: 15;
+    -fx-padding: 0 4 0 4;
+    -fx-background-color: linear-gradient(#e5e5e5 5%, #dadada 5%, #b2b2b2 100%);
+}
+
+.upload-response-text {
+    -fx-text-fill: white;
+    -fx-font-size: 12;
 }
 
 .big-divider {

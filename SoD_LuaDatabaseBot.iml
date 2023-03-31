@@ -35,6 +35,7 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.typesafe:config:1.4.1" level="project" />
     <orderEntry type="library" name="Maven: org.spongepowered:configurate-jackson:4.1.2" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.12.3" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.10.1" level="project" />
     <orderEntry type="module-library">
       <library name="Maven: me.blazingtwist:fx-loading-spinner:1.0">
         <CLASSES>

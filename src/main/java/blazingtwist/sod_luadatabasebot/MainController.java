@@ -1,28 +1,36 @@
 package blazingtwist.sod_luadatabasebot;
 
-import blazingtwist.sod_luadatabasebot.utils.WebContext;
-import blazingtwist.sod_luadatabasebot.utils.WikiUpload;
-import java.io.IOException;
-import me.blazingtwist.loadingspinner.IconKey;
-import me.blazingtwist.loadingspinner.LoadingSpinner;
 import blazingtwist.sod_luadatabasebot.config.MainConfig;
 import blazingtwist.sod_luadatabasebot.ui.SourceFileEntry;
+import blazingtwist.sod_luadatabasebot.ui.UploadErrors;
+import blazingtwist.sod_luadatabasebot.ui.UploadStatusIndicator;
+import blazingtwist.sod_luadatabasebot.ui.UploadWarnings;
 import blazingtwist.sod_luadatabasebot.ui.YamlMapperContainer;
 import blazingtwist.sod_luadatabasebot.utils.FieldAccessor;
+import blazingtwist.sod_luadatabasebot.utils.JsonPrettifier;
+import blazingtwist.sod_luadatabasebot.utils.MediaWikiResponse;
 import blazingtwist.sod_luadatabasebot.utils.StringUtils;
+import blazingtwist.sod_luadatabasebot.utils.WikiUpload;
 import blazingtwist.sod_luadatabasebot.yamlmapper.MapperManager;
 import blazingtwist.sod_luadatabasebot.yamlmapper.YamlFileKey;
+import blazingtwist.sod_luadatabasebot.yamlmapper.YamlMapper;
 import blazingtwist.sod_luadatabasebot.yamlmapper.YamlMapperCategory;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -31,8 +39,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -43,6 +53,9 @@ public class MainController {
 
 	@FXML
 	public StackPane rootNode;
+
+	@FXML
+	public VBox fileSelectionRootPanel;
 
 	@FXML
 	public GridPane yamlMapperGrid;
@@ -93,21 +106,44 @@ public class MainController {
 	public TextField singleStringEditNewTextField;
 
 	@FXML
-	public LoadingSpinner testLoadingSpinner;
+	public VBox uploadStatusRootPanel;
 	@FXML
-	public LoadingSpinner testLoadingSpinner2;
+	public GridPane uploadStatusContainer;
+	@FXML
+	public Button uploadResultButton;
 
+	@FXML
+	public VBox uploadResponsePanel;
+	@FXML
+	public HBox uploadWarningErrorContainer;
+	@FXML
+	public Label uploadResponseBodyLabel;
+
+	private boolean initialized = false;
 	private boolean fileListVisible = false;
 	private final List<YamlFileKey> displayedSourceFilesInOrder = new ArrayList<>();
 	private final HashMap<YamlFileKey, SourceFileEntry> sourceFileEntryInstances = new HashMap<>();
+	private final UploadWarnings uploadWarnings = UploadWarnings.load();
+	private final UploadErrors uploadErrors = UploadErrors.load();
 
 	private boolean uploadConfigVisible = false;
 
 	private FieldAccessor<?, String> currentSingleStringEditTarget = null;
 
 	public void initialize() {
+		if (initialized) {
+			return;
+		}
+		initialized = true;
+
 		registerYamlMappers();
 		initUploadSettings();
+
+		uploadWarningErrorContainer.getChildren().addAll(
+				uploadWarnings.getRootNode(),
+				uploadErrors.getRootNode()
+		);
+		uploadResultButton.setOnMouseClicked(this::onUploadResultButtonPressed);
 	}
 
 	private void registerYamlMappers() {
@@ -166,9 +202,20 @@ public class MainController {
 		});
 	}
 
-	public void updateDisplayedSourceFiles() {
+	public void onStatUploadSelectionChanged() {
 		Set<YamlFileKey> requiredSourceFiles = MapperManager.getInstance().getRequiredSourceFiles();
+		updateDisplayedSourceFiles(requiredSourceFiles);
 
+		MainConfig mainConfig = MainApplication.getMainConfig();
+		for (YamlFileKey fileKey : requiredSourceFiles) {
+			String filePath = mainConfig.getYamlFilePath(fileKey);
+			if (filePath != null) {
+				getSourceFileInstance(fileKey).checkFile(new File(filePath));
+			}
+		}
+	}
+
+	private void updateDisplayedSourceFiles(Set<YamlFileKey> requiredSourceFiles) {
 		Set<YamlFileKey> filesToAdd = requiredSourceFiles.stream()
 				.filter(file -> !displayedSourceFilesInOrder.contains(file))
 				.collect(Collectors.toSet());
@@ -195,7 +242,6 @@ public class MainController {
 				getSourceFileInstance(displayedSourceFilesInOrder.get(i)).showDivider(animDuration);
 			}
 			getSourceFileInstance(displayedSourceFilesInOrder.get(remainingSourceFileCount - 1)).hideDivider(animDuration);
-			updateFilesSelected();
 		}
 	}
 
@@ -469,6 +515,7 @@ public class MainController {
 	private void closeActivePanel() {
 		darkenOverlay.setDisable(true);
 		singleStringEditPanel.setDisable(true);
+		uploadResponsePanel.setDisable(true);
 
 		Duration transitionDuration = Duration.millis(100);
 		if (darkenOverlay.getOpacity() >= 0.49) {
@@ -477,13 +524,17 @@ public class MainController {
 			transition.setToValue(0.0);
 			transition.playFromStart();
 		}
+		tryHidePanel(singleStringEditPanel, transitionDuration);
+		tryHidePanel(uploadResponsePanel, transitionDuration);
+	}
 
-		if (singleStringEditPanel.getOpacity() > 0.99) {
-			FadeTransition fadeTransition = new FadeTransition(transitionDuration, singleStringEditPanel);
+	private void tryHidePanel(Node panel, Duration transitionDuration) {
+		if (panel.getOpacity() > 0.99) {
+			FadeTransition fadeTransition = new FadeTransition(transitionDuration, panel);
 			fadeTransition.setFromValue(1.0);
 			fadeTransition.setToValue(0.0);
 			fadeTransition.playFromStart();
-			TranslateTransition translateTransition = new TranslateTransition(transitionDuration, singleStringEditPanel);
+			TranslateTransition translateTransition = new TranslateTransition(transitionDuration, panel);
 			translateTransition.setFromY(0);
 			translateTransition.setToY(-50);
 			translateTransition.playFromStart();
@@ -503,6 +554,40 @@ public class MainController {
 		singleStringEditCurrentTextField.setText(currentValue);
 		singleStringEditNewTextField.setText(currentValue);
 
+		fadeInOverlay(singleStringEditPanel);
+	}
+
+	public void openUploadResponseInfo(MediaWikiResponse<?> response) {
+		if (response == null) {
+			return;
+		}
+
+		darkenOverlay.setDisable(false);
+		uploadResponsePanel.setDisable(false);
+
+		uploadWarnings.clear();
+		uploadWarningErrorContainer.getChildren().remove(uploadWarnings.getRootNode());
+		if (response.warnings().isPresent()) {
+			uploadWarnings.loadWarnings(response.warnings().get());
+			uploadWarningErrorContainer.getChildren().add(uploadWarnings.getRootNode());
+		}
+
+		uploadErrors.clear();
+		uploadWarningErrorContainer.getChildren().remove(uploadErrors.getRootNode());
+		if (response.errorInfo().isPresent()) {
+			uploadErrors.loadError(response.errorInfo().get());
+			uploadWarningErrorContainer.getChildren().add(uploadErrors.getRootNode());
+		}
+
+		String jsonResponse = response.rawResponse()
+				.map(x -> JsonPrettifier.prettify(x.responseText()))
+				.orElse("");
+		uploadResponseBodyLabel.setText(jsonResponse);
+
+		fadeInOverlay(uploadResponsePanel);
+	}
+
+	private void fadeInOverlay(Node panel) {
 		Duration transitionDuration = Duration.millis(100);
 		if (darkenOverlay.getOpacity() <= 0.01) {
 			FadeTransition transition = new FadeTransition(transitionDuration, darkenOverlay);
@@ -511,12 +596,12 @@ public class MainController {
 			transition.playFromStart();
 		}
 
-		if (singleStringEditPanel.getOpacity() <= 0.01) {
-			FadeTransition fadeTransition = new FadeTransition(transitionDuration, singleStringEditPanel);
+		if (panel.getOpacity() <= 0.01) {
+			FadeTransition fadeTransition = new FadeTransition(transitionDuration, panel);
 			fadeTransition.setFromValue(0.0);
 			fadeTransition.setToValue(1.0);
 			fadeTransition.playFromStart();
-			TranslateTransition translateTransition = new TranslateTransition(transitionDuration, singleStringEditPanel);
+			TranslateTransition translateTransition = new TranslateTransition(transitionDuration, panel);
 			translateTransition.setFromY(-50);
 			translateTransition.setToY(0);
 			translateTransition.playFromStart();
@@ -546,55 +631,148 @@ public class MainController {
 
 	@FXML
 	public void onUploadPressed() {
-		// TODO
-		// open panel containing each file to upload:
-		//   | <file name> | <loading-spinner> |
-		//   | <file name> | <loading-spinner> |
-		//                              [Close]
-		try {
-			MainConfig mainConfig = MainApplication.getMainConfig();
-			WikiUpload wikiUpload = new WikiUpload(mainConfig.getWikiURL());
+		uploadStatusContainer.getChildren().clear();
+		changeToUploadWindow();
 
-			WebContext.WebResponse response = wikiUpload.acquireLoginToken();
-			System.out.println("loginToken response: " + response.responseText());
+		MainConfig mainConfig = MainApplication.getMainConfig();
+		WikiUpload wikiUpload = new WikiUpload(mainConfig.getWikiURL());
+		acquireLoginToken(mainConfig, wikiUpload, 0);
+	}
 
-			response = wikiUpload.logIn(mainConfig.getBotUsername(), mainConfig.getBotPassword());
-			System.out.println("login response: " + response.responseText());
+	private void acquireLoginToken(MainConfig mainConfig, WikiUpload wikiUpload, int row) {
+		UploadStatusIndicator statusIndicator = UploadStatusIndicator.load("Acquire Login Token", row);
+		uploadStatusContainer.getChildren().addAll(statusIndicator.getNodes());
+		statusIndicator.setSpinnerLoading();
 
-			response = wikiUpload.acquireCsrfToken();
-			System.out.println("csrf response: " + response.responseText());
+		Task<MediaWikiResponse<?>> task = new Task<>() {
+			@Override
+			protected MediaWikiResponse<?> call() {
+				return wikiUpload.acquireLoginToken();
+			}
+		};
+		task.setOnSucceeded(state -> {
+			MediaWikiResponse<?> result = task.getValue();
+			statusIndicator.handleResponse(result);
+			if (result.status() == MediaWikiResponse.Status.Success) {
+				logIn(mainConfig, wikiUpload, row + 1);
+			} else {
+				onUploadComplete(false);
+			}
+		});
+		new Thread(task).start();
+	}
 
-			MapperManager.getInstance().getActiveMappers().forEach(mapper -> {
-				String wikiPath = mapper.getWikiPathAccessor(mainConfig).getCurrentValue();
-				String mapperOutput = String.join("\n", mapper.buildLuaLines());
-				try {
-					WebContext.WebResponse uploadResponse = wikiUpload.uploadFile(wikiPath, mapperOutput);
-					System.out.println("path: " + wikiPath);
-					System.out.println("\t response: " + uploadResponse.responseText());
-				} catch (IOException e) {
-					System.out.println("web error! " + e);
+	private void logIn(MainConfig mainConfig, WikiUpload wikiUpload, int row) {
+		UploadStatusIndicator statusIndicator = UploadStatusIndicator.load("Logging In", row);
+		uploadStatusContainer.getChildren().addAll(statusIndicator.getNodes());
+		statusIndicator.setSpinnerLoading();
+
+		Task<MediaWikiResponse<?>> task = new Task<>() {
+			@Override
+			protected MediaWikiResponse<?> call() {
+				return wikiUpload.logIn(mainConfig.getBotUsername(), mainConfig.getBotPassword());
+			}
+		};
+		task.setOnSucceeded(state -> {
+			MediaWikiResponse<?> result = task.getValue();
+			statusIndicator.handleResponse(result);
+			if (result.status() == MediaWikiResponse.Status.Success) {
+				acquireCsrfToken(mainConfig, wikiUpload, row + 1);
+			} else {
+				onUploadComplete(false);
+			}
+		});
+		new Thread(task).start();
+	}
+
+	private void acquireCsrfToken(MainConfig mainConfig, WikiUpload wikiUpload, int row) {
+		UploadStatusIndicator statusIndicator = UploadStatusIndicator.load("Acquire CSRF Token", row);
+		uploadStatusContainer.getChildren().addAll(statusIndicator.getNodes());
+		statusIndicator.setSpinnerLoading();
+
+		Task<MediaWikiResponse<?>> task = new Task<>() {
+			@Override
+			protected MediaWikiResponse<?> call() {
+				return wikiUpload.acquireCsrfToken();
+			}
+		};
+		task.setOnSucceeded(state -> {
+			MediaWikiResponse<?> result = task.getValue();
+			statusIndicator.handleResponse(result);
+			if (result.status() == MediaWikiResponse.Status.Success) {
+				uploadFiles(mainConfig, wikiUpload, row + 1);
+			} else {
+				onUploadComplete(false);
+			}
+		});
+		new Thread(task).start();
+	}
+
+	private void uploadFiles(MainConfig mainConfig, WikiUpload wikiUpload, int row) {
+		AtomicBoolean failed = new AtomicBoolean(false);
+
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		for (YamlMapper mapper : MapperManager.getInstance().getActiveMappers()) {
+			String wikiPath = mapper.getWikiPathAccessor(mainConfig).getCurrentValue();
+			String mapperOutput = String.join("\n", mapper.buildLuaLines());
+			final int myRow = row;
+
+			UploadStatusIndicator statusIndicator = UploadStatusIndicator.load("Upload " + mapper.getDisplayName(), myRow);
+			uploadStatusContainer.getChildren().addAll(statusIndicator.getNodes());
+			statusIndicator.setSpinnerLoading();
+
+			Task<MediaWikiResponse<?>> task = new Task<>() {
+				@Override
+				protected MediaWikiResponse<?> call() {
+					return wikiUpload.uploadFile(wikiPath, mapperOutput);
+				}
+			};
+			task.setOnSucceeded(state -> {
+				MediaWikiResponse<?> result = task.getValue();
+				statusIndicator.handleResponse(result);
+				if (result.status() != MediaWikiResponse.Status.Success) {
+					failed.set(true);
 				}
 			});
-		} catch (IOException e) {
-			System.out.println("web error! " + e);
+			executor.submit(task);
+
+			row++;
+		}
+
+		executor.submit(() -> Platform.runLater(() -> onUploadComplete(!failed.get())));
+	}
+
+	private void changeToUploadWindow() {
+		fileSelectionRootPanel.setVisible(false);
+		fileSelectionRootPanel.setDisable(true);
+		uploadStatusRootPanel.setVisible(true);
+		uploadStatusRootPanel.setDisable(false);
+	}
+
+	private void changeToFileSelectWindow() {
+		fileSelectionRootPanel.setVisible(true);
+		fileSelectionRootPanel.setDisable(false);
+		uploadStatusRootPanel.setVisible(false);
+		uploadStatusRootPanel.setDisable(true);
+	}
+
+	private void onUploadComplete(boolean success) {
+		uploadResultButton.setDisable(false);
+		uploadResultButton.getStyleClass().remove("flat-button");
+		if (success) {
+			uploadResultButton.setText("Success");
+			uploadResultButton.getStyleClass().add("flat-button-positive");
+		} else {
+			uploadResultButton.setText("Failed");
+			uploadResultButton.getStyleClass().add("flat-button-negative");
 		}
 	}
 
-	@FXML
-	public void onAnimateSpinner() {
-		LoadingSpinner[] spinners = new LoadingSpinner[]{testLoadingSpinner, testLoadingSpinner2};
-		for (LoadingSpinner spinner : spinners) {
-			IconKey displayedIcon = spinner.getDisplayedIcon();
-			if (displayedIcon == null) {
-				spinner.setDisplayedIcon(IconKey.getByIndex(0));
-			} else {
-				int newIndex = (displayedIcon.index + 1) % spinner.getIconSequence().size();
-				if (newIndex == 0) {
-					spinner.setDisplayedIcon(null);
-				} else {
-					spinner.setDisplayedIcon(IconKey.getByIndex(newIndex));
-				}
-			}
-		}
+	private void onUploadResultButtonPressed(MouseEvent event) {
+		uploadResultButton.setText("In Progress");
+		uploadResultButton.setDisable(true);
+		uploadResultButton.getStyleClass().removeAll("flat-button-positive", "flat-button-negative");
+		uploadResultButton.getStyleClass().add("flat-button");
+		changeToFileSelectWindow();
 	}
 }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<GridPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="blazingtwist.sod_luadatabasebot.ui.UploadWarnings"
+          fx:id="rootPane" vgap="2" hgap="8">
+
+    <rowConstraints>
+        <RowConstraints vgrow="NEVER"/>
+        <RowConstraints prefHeight="4" vgrow="NEVER"/>
+    </rowConstraints>
+
+    <Label text="Warnings" styleClass="upload-warnings-header" GridPane.rowIndex="0" GridPane.columnIndex="0"
+           GridPane.fillWidth="true"/>
+
+    <GridPane fx:id="warningsPane" vgap="2" hgap="8" GridPane.rowIndex="2" GridPane.columnIndex="0">
+        <Label text="mod" styleClass="upload-warnings-module" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label text="there was an error" styleClass="upload-warnings-text" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label text="more messages" styleClass="upload-warnings-text" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="module" styleClass="upload-warnings-module" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <Label text="msg" styleClass="upload-warnings-text" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        <Label text="msg2" styleClass="upload-warnings-text" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+    </GridPane>
+
+</GridPane>

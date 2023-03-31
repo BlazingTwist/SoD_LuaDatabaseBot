@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<GridPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="blazingtwist.sod_luadatabasebot.ui.UploadErrors"
+          fx:id="errorPane" vgap="2" hgap="8">
+
+    <columnConstraints>
+        <ColumnConstraints hgrow="NEVER"/>
+        <ColumnConstraints hgrow="NEVER"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints vgrow="NEVER"/>
+        <RowConstraints prefHeight="4" vgrow="NEVER"/>
+    </rowConstraints>
+
+    <Label text="Errors" styleClass="upload-errors-header" GridPane.rowIndex="0" GridPane.columnIndex="0"
+           GridPane.columnSpan="2" GridPane.fillWidth="true"/>
+
+    <Label text="code" styleClass="upload-errors-title" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+    <Label text="100" styleClass="upload-errors-text" GridPane.rowIndex="2" GridPane.columnIndex="1"
+           fx:id="codeLabel"/>
+
+    <Label text="info" styleClass="upload-errors-title" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+    <Label text="Continue" styleClass="upload-errors-text" GridPane.rowIndex="3" GridPane.columnIndex="1"
+           fx:id="infoLabel"/>
+
+</GridPane>

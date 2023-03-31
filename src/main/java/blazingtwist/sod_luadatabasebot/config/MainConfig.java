@@ -27,7 +27,7 @@ public class MainConfig {
 	protected Map<YamlFileKey, String> previousYamlFilePaths = new HashMap<>();
 
 	@Setting("wikiURL")
-	protected String wikiURL = "https://dreamworks-school-of-dragons.fandom.com/";
+	protected String wikiURL = "https://schoolofdragons.wiki.gg/";
 
 	@Setting("bot-username")
 	protected String botUsername = "ExampleUser@LuaDatabaseBot";

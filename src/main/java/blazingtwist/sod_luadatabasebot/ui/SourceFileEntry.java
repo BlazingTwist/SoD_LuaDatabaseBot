@@ -81,11 +81,6 @@ public class SourceFileEntry {
 		selectButton.setButtonText("Select File");
 		selectButton.setLed(false);
 		selectButton.setOnclickCallback(this::openFileDialog);
-
-		String filePath = MainApplication.getMainConfig().getYamlFilePath(fileKey);
-		if (filePath != null) {
-			checkFile(new File(filePath));
-		}
 	}
 
 	public void openFileDialog(MouseEvent event) {

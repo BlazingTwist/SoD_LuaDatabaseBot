@@ -29,3 +29,5 @@
 
 # File-based project format
 *.iws
+
+passwords.txt
