@@ -6,7 +6,7 @@ Navigate to the [Special:BotPasswords](https://schoolofdragons.wiki.gg/wiki/Spec
 
 Choose a Bot name that you can easily remember (1) and click 'create' (2).
 
-![image showing the Bot passwords page](readme_media/botpasswordspage.png)
+<img alt="image showing the Bot passwords page" src="https://github.com/BlazingTwist/SoD_LuaDatabaseBot/blob/master/readme_media/botpasswordspage.png?raw=true" width="480px">
 
 Enable these permissions for the bot:
 * **High-volume editing**
@@ -16,11 +16,11 @@ Enable these permissions for the bot:
 
 Click 'create' at the bottom of the page.
 
-![image showing the bot permissions](readme_media/botpermissions.png)
+<img alt="image showing the bot permissions" src="https://github.com/BlazingTwist/SoD_LuaDatabaseBot/blob/master/readme_media/botpermissions.png?raw=true" width="240px">
 
 Time to write down the username and password of your bot account.
 
-![image showing the bot name and password](readme_media/botpassword.png)
+<img alt="image showing the bot name and password" src="https://github.com/BlazingTwist/SoD_LuaDatabaseBot/blob/master/readme_media/botpassword.png?raw=true" width="480px">
 
 ## Upload files with the GUI
 
@@ -39,17 +39,17 @@ Now edit the 'Bot Name' and 'Bot Password' on the right.
 
 Click 'Upload' to upload the selected modules once you're done.
 
-![image showing the LuaDatabaseBot main window](readme_media/ldbb_uploadwindow.png)
+<img alt="image showing the LuaDatabaseBot main window" src="https://github.com/BlazingTwist/SoD_LuaDatabaseBot/blob/master/readme_media/ldbb_uploadwindow.png?raw=true" width="400px">
 
 If you've done everything correctly, you should see something like this.
 
-![image showing successful upload](readme_media/ldbb_statuswindow.png)
+<img alt="image showing successful upload" src="https://github.com/BlazingTwist/SoD_LuaDatabaseBot/blob/master/readme_media/ldbb_statuswindow.png?raw=true" width="400px">
 
 Otherwise, this window shows you which step failed, so you can fix it.  
 Click 'Response' on any step to see more details.
 
-![image showing a failed upload](readme_media/ldbb_statuserror.png)
+<img alt="image showing a failed upload" src="https://github.com/BlazingTwist/SoD_LuaDatabaseBot/blob/master/readme_media/ldbb_statuserror.png?raw=true" width="400px">
 
 In this case, I made a typo in the password.
 
-![image showing the response window of the failed step](readme_media/ldbb_statuserrordescription.png)
+<img alt="image showing the response window of the failed step" src="https://github.com/BlazingTwist/SoD_LuaDatabaseBot/blob/master/readme_media/ldbb_statuserrordescription.png?raw=true" width="400px">
