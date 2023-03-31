@@ -64,6 +64,10 @@ public class MainConfig {
 	}
 
 	public void setYamlFilePath(YamlFileKey targetFile, String absolutePath) {
+		if (absolutePath == null) {
+			previousYamlFilePaths.remove(targetFile);
+			return;
+		}
 		previousYamlFilePaths.put(targetFile, absolutePath);
 		mostRecentFilePath = absolutePath;
 	}

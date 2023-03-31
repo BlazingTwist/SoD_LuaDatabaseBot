@@ -68,7 +68,9 @@ public class SourceFileEntry {
 		Dragboard dragboard = dragEvent.getDragboard();
 		boolean success = false;
 		if (dragboard.hasFiles()) {
-			checkFile(dragboard.getFiles().get(0));
+			File file = dragboard.getFiles().get(0);
+			saveFilePath(file);
+			checkFile(file);
 			success = true;
 		}
 		dragEvent.setDropCompleted(success);
@@ -88,14 +90,21 @@ public class SourceFileEntry {
 		String previousPath = MainApplication.getMainConfig().getSearchFilePath(yamlFileKey);
 		if (previousPath != null) {
 			File previousFile = new File(previousPath);
+			if (!previousFile.isDirectory()) {
+				previousFile = previousFile.getParentFile();
+			}
+
 			if (previousFile.isDirectory()) {
 				fileChooser.setInitialDirectory(previousFile);
-			} else {
-				fileChooser.setInitialDirectory(previousFile.getParentFile());
 			}
 		}
 		File selectedFile = fileChooser.showOpenDialog(null);
+		saveFilePath(selectedFile);
 		checkFile(selectedFile);
+	}
+
+	private void saveFilePath(File file) {
+		MainApplication.getMainConfig().setYamlFilePath(yamlFileKey, file == null ? null : file.getAbsolutePath());
 	}
 
 	public void checkFile(File file) {
@@ -106,8 +115,6 @@ public class SourceFileEntry {
 			MainApplication.getMainController().updateFilesSelected();
 			return;
 		}
-
-		MainApplication.getMainConfig().setYamlFilePath(yamlFileKey, file.getAbsolutePath());
 
 		List<Exception> exceptions = MapperManager.getInstance().loadFile(yamlFileKey, file);
 		if (exceptions == null || exceptions.isEmpty()) {
