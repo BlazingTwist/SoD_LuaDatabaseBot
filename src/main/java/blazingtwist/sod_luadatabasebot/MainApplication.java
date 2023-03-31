@@ -22,8 +22,7 @@ public class MainApplication extends Application {
 	private static YamlConfigurationLoader mainConfigLoader;
 	private static MainConfig mainConfig;
 
-	private static Parent windowRootNode;
-	private static MainController mainController;
+ 	private static MainController mainController;
 
 	public static MainConfig getMainConfig() {
 		return mainConfig;
@@ -40,7 +39,12 @@ public class MainApplication extends Application {
 	}
 
 	@Override
-	public void start(Stage stage) {
+	public void start(Stage stage) throws IOException {
+		FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("main-view.fxml"));
+		Parent windowRootNode = fxmlLoader.load();
+		mainController = fxmlLoader.getController();
+		mainController.initialize();
+
 		Scene scene = new Scene(windowRootNode, mainConfig.getWindowWidth(), mainConfig.getWindowHeight());
 		scene.widthProperty().addListener((observable, oldValue, newValue) -> mainConfig.setWindowWidth(newValue.intValue()));
 		scene.heightProperty().addListener((observable, oldValue, newValue) -> mainConfig.setWindowHeight(newValue.intValue()));
@@ -60,18 +64,18 @@ public class MainApplication extends Application {
 	}
 
 	public static void main(String[] args) throws URISyntaxException, IOException {
-		String mainConfigPath = new File(MainApplication.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getAbsolutePath()
-				+ File.separator + "config.yaml";
+		File configDirectory = new File(MainApplication.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+		if (!configDirectory.isDirectory()) {
+			configDirectory = configDirectory.getParentFile();
+		}
+		String mainConfigPath = configDirectory.getAbsolutePath() + File.separator + "config.yaml";
+		System.out.println("configPath: " + mainConfigPath);
+
 		mainConfigLoader = YamlConfigurationLoader.builder()
 				.nodeStyle(NodeStyle.BLOCK)
 				.file(new File(mainConfigPath))
 				.build();
 		mainConfig = mainConfigLoader.load().get(MainConfig.class);
-
-		FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("main-view.fxml"));
-		windowRootNode = fxmlLoader.load();
-		mainController = fxmlLoader.getController();
-		mainController.initialize();
 
 		launch();
 	}

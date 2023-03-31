@@ -31,3 +31,4 @@
 *.iws
 
 passwords.txt
+out/

@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Main-Class: blazingtwist.sod_luadatabasebot.JavaFxLauncher
+Class-Path: libs/checker-qual-3.12.0.jar libs/javafx-controls-18.0.1.jar
+  libs/snakeyaml-1.28.jar libs/javafx-base-18.0.1.jar libs/geantyref-1.3
+ .11.jar libs/configurate-hocon-4.1.2.jar libs/javafx-fxml-18.0.1-win.ja
+ r libs/jackson-core-2.12.3.jar libs/configurate-yaml-4.1.2.jar libs/jav
+ afx-fxml-18.0.1.jar libs/gson-2.10.1.jar libs/configurate-core-4.1.2.ja
+ r libs/javafx-graphics-18.0.1.jar libs/fx-loading-spinner-1.0.0.jar lib
+ s/javafx-controls-18.0.1-win.jar libs/javafx-base-18.0.1-win.jar libs/c
+ onfig-1.4.1.jar libs/error_prone_annotations-2.6.0.jar libs/javassist-3
+ .26.0-GA.jar libs/configurate-jackson-4.1.2.jar libs/annotations-23.0.0
+ .jar libs/javafx-graphics-18.0.1-win.jar libs/reflections-0.9.12.jar
+
